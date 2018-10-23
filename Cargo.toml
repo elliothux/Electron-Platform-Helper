@@ -1,0 +1,10 @@
+[package]
+name = "el"
+version = "0.1.0"
+authors = ["HuQingyang <i@do.codes>"]
+
+[dependencies]
+web-view = "^0.2.1"
+serde_derive = "^1.0.80"
+serde_json = "^1.0.32"
+serde = "^1.0.80"
