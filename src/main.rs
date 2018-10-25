@@ -1,5 +1,3 @@
-// #![windows_subsystem = "windows"]
-
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
@@ -10,12 +8,13 @@ use std::io::prelude::*;
 use std::fs::File;
 use std::path::Path;
 
+mod utils;
 
 fn main() {
     let mut html = String::new();
-    let mut file = File::open(Path::new("./src/todo/index.html")).expect("file not found");
+    let mut file = File::open(Path::new("./view/index.html")).expect("file not found");
     file.read_to_string(&mut html).expect("Unable to read the file");
-    let size = (320, 480);
+    let size = (800, 480);
     let resizable = false;
     let debug = true;
     let init_cb = |webview: MyUnique<WebView<Vec<Task>>>| {
@@ -57,12 +56,4 @@ pub enum Cmd {
     addTask { name: String },
     markTask { index: usize, done: bool },
     clearDoneTasks,
-}
-
-fn inline_style(s: &str) -> String {
-    format!(r#"<style type="text/css">{}</style>"#, s)
-}
-
-fn inline_script(s: &str) -> String {
-    format!(r#"<script type="text/javascript">{}</script>"#, s)
 }
