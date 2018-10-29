@@ -82,21 +82,23 @@ pub fn is_runtime_exist(platform: Platform, version: &str) -> bool {
   )
     .unwrap()
     .to_str()
-    .unwrap();
-  if !is_path_exist(platform_path) {
+    .unwrap()
+    .to_owned();
+  if !is_path_exist(&platform_path) {
     return false;
   }
 
-  let runtime_path = Path::new(platform_path)
+  let runtime_path = Path::new(&platform_path)
     .join(Path::new(
-      format!("{}/{}",
+      &format!("{}/{}",
           get_platform_str(platform),
           version
       )
     ))
     .to_str()
-    .unwrap();
-  is_path_exist(runtime_path)
+    .unwrap()
+    .to_owned();
+  is_path_exist(&runtime_path)
 }
 
 pub fn open_app_bin() {
@@ -108,13 +110,14 @@ pub fn open_app_bin() {
       .output()
       .expect("failed to execute process")
   } else {
-    let bin_path = Path::new(current_path)
+    let bin_path = Path::new(&current_path)
       .join("./electron")
       .to_str()
-      .unwrap();
+      .unwrap()
+      .to_owned();
     Command::new("sh")
       .arg("-c")
-      .arg(bin_path)
+      .arg(&bin_path)
       .output()
       .expect("failed to execute process")
   };

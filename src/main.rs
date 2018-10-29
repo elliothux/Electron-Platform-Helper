@@ -50,7 +50,7 @@ fn exec_callback<'a, T>(webview: &mut WebView<'a, T>, arg: &str, tasks: &mut Vec
   render(webview, tasks);
 }
 
-fn main() {
+fn open_install_helper() {
   let html = utils::generate_html(
     vec![include_str!("view/css/styles.css")],
     vec![include_str!("view/js/picodom.js"), include_str!("view/js/app.js")],
@@ -73,4 +73,33 @@ fn main() {
     exec_callback,
     userdata
   );
+}
+
+fn main() {
+  let mut is_platform_exist = false;
+  if cfg!(target_os = "macos") {
+    // TODO: version
+    is_platform_exist = utils::is_runtime_exist(utils::Platform::DARWIN, "3.0.6")
+  } else if cfg!(target_os = "windows") {
+    if cfg!(target_pointer_width = "32") {
+      // TODO: win32
+    } else if cfg!(target_pointer_width = "64") {
+      // TODO: win64
+    }
+  } else if cfg!(target_os = "linux") {
+    if cfg!(target_pointer_width = "32") {
+      // TODO: linux32
+    } else if cfg!(target_pointer_width = "64") {
+      // TODO: linux64
+    }
+  } else {
+    panic!("Unsupported platform!")
+  }
+
+  if is_platform_exist {
+    // TODO: OPEN APP
+    utils::open_app_bin();
+  } else {
+    open_install_helper();
+  }
 }
