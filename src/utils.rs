@@ -74,16 +74,20 @@ fn get_platform_str(platform: Platform) -> String {
   }
 }
 
-pub fn is_runtime_exist(platform: Platform, version: &str) -> bool {
-  let platform_path = fs::canonicalize(
-    &PathBuf::from(
-      "~/.electron-platform"
-    )
-  )
-    .unwrap()
+fn path_buf_to_string(path: PathBuf) -> String {
+  path
     .to_str()
     .unwrap()
-    .to_owned();
+    .to_owned()
+}
+
+pub fn is_runtime_exist(platform: Platform, version: &str) -> bool {
+  let home_path = path_buf_to_string(env::home_dir().unwrap());
+  let platform_path = path_buf_to_string(
+    Path::new(&home_path)
+      .join(Path::new(".electron-platform"))
+  );
+  println!("{}", &platform_path);
   if !is_path_exist(&platform_path) {
     return false;
   }
