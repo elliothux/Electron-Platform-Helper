@@ -2,6 +2,7 @@
 extern crate serde_derive;
 extern crate serde_json;
 extern crate web_view;
+extern crate os_info;
 
 use web_view::*;
 use std::io::prelude::*;
