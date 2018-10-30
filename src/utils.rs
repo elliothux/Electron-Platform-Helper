@@ -35,6 +35,7 @@ pub fn generate_html(styles: Vec<&str>, scripts: Vec<&str>) -> String {
         {styles}
     </head>
     <body>
+        <div id="root"></div>
         {scripts}
     </body>
     </html>"#,
