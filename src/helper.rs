@@ -1,5 +1,5 @@
-use std::env;
-use std::path::{Path};
+use std::{env, fs};
+use std::path::{Path, PathBuf};
 use std::process::Command;
 use model::Platform;
 use utils::{path_buf_to_string, is_path_exist};
@@ -35,11 +35,35 @@ fn platform_to_str(platform: Platform) -> String {
   }
 }
 
-pub fn get_valid_runtime_path(version: &str) -> Option<Path> {
-
+fn get_current_platform_string() -> String {
+  platform_to_str(
+    get_current_platform()
+  )
 }
 
-pub fn is_runtime_exist(target: &str) -> bool {
+fn get_runtimes_path() -> PathBuf {
+  let home_path = env::home_dir().unwrap();
+  let platform_path = Path::new(&home_path)
+    .join(Path::new(".electron-platform"));
+  Path::new(&platform_path)
+    .join(Path::new(
+      &format!("runtime/{}",
+         &get_current_platform_string(),
+      )
+    ))
+}
+
+pub fn get_valid_runtime_path(version: &str) -> Option<String> {
+  let runtimes_path = get_runtimes_path();
+
+  let paths = fs::read_dir(runtimes_path).unwrap();
+  for path in paths {
+    println!("Name: {}", path.unwrap().path().display());
+  }
+  Some(String::from(""))
+}
+
+pub fn is_runtime_exist(platform: Platform, version: &str) -> bool {
   let home_path = path_buf_to_string(env::home_dir().unwrap());
   let platform_path = path_buf_to_string(
     Path::new(&home_path)
@@ -73,8 +97,6 @@ pub fn open_app_bin() {
       Path::new(&current_path)
         .with_file_name("App")
     );
-    println!("current: {}", &path_buf_to_string(current_path.clone()));
-    println!("bin: {}", &bin_path);
     Command::new(&bin_path)
       .spawn()
       .expect("failed to execute process")

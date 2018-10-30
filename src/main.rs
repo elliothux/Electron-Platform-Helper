@@ -27,6 +27,7 @@ fn main() {
     },
     Some(runtime_path) => {
       // TODO: link runtime to app
+      return;
       helper::open_app_bin();
     }
   }
