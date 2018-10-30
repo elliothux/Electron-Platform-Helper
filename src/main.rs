@@ -9,7 +9,9 @@ use std::io::prelude::*;
 use std::fs::File;
 use std::path::Path;
 
-mod utils;
+pub mod utils;
+pub mod helper;
+pub mod model;
 
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -79,7 +81,7 @@ fn main() {
   let mut is_platform_exist = false;
   if cfg!(target_os = "macos") {
     // TODO: version
-    is_platform_exist = utils::is_runtime_exist(utils::Platform::DARWIN, "3.0.6")
+    is_platform_exist = helper::is_runtime_exist(model::Platform::DARWIN, "3.0.6")
   } else if cfg!(target_os = "windows") {
     if cfg!(target_pointer_width = "32") {
       // TODO: win32
@@ -97,8 +99,7 @@ fn main() {
   }
 
   if is_platform_exist {
-    // TODO: OPEN APP
-    utils::open_app_bin();
+    helper::open_app_bin();
     open_install_helper();
   } else {
     open_install_helper();
