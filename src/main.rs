@@ -99,6 +99,7 @@ fn main() {
   if is_platform_exist {
     // TODO: OPEN APP
     utils::open_app_bin();
+    open_install_helper();
   } else {
     open_install_helper();
   }

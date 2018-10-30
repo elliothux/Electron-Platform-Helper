@@ -88,14 +88,13 @@ pub fn is_runtime_exist(platform: Platform, version: &str) -> bool {
     Path::new(&home_path)
       .join(Path::new(".electron-platform"))
   );
-  println!("{}", &platform_path);
   if !is_path_exist(&platform_path) {
     return false;
   }
 
   let runtime_path = Path::new(&platform_path)
     .join(Path::new(
-      &format!("{}/{}",
+      &format!("runtime/{}/{}",
           get_platform_str(platform),
           version
       )
@@ -107,23 +106,22 @@ pub fn is_runtime_exist(platform: Platform, version: &str) -> bool {
 }
 
 pub fn open_app_bin() {
-  let current_path = env::current_dir().unwrap();
+  let current_path = env::current_exe().unwrap();
   if cfg!(target_os = "windows") {
     // TODO: Windows
     Command::new("cmd")
       .args(&["/C", "echo hello"])
-      .output()
+      .spawn()
       .expect("failed to execute process")
   } else {
-    let bin_path = Path::new(&current_path)
-      .join("./electron")
-      .to_str()
-      .unwrap()
-      .to_owned();
-    Command::new("sh")
-      .arg("-c")
-      .arg(&bin_path)
-      .output()
+    let bin_path = path_buf_to_string(
+      Path::new(&current_path)
+        .with_file_name("App")
+    );
+    println!("current: {}", &path_buf_to_string(current_path.clone()));
+    println!("bin: {}", &bin_path);
+    Command::new(&bin_path)
+      .spawn()
       .expect("failed to execute process")
   };
 }
