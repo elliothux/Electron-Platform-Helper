@@ -52,11 +52,11 @@ fn exec_callback<'a, T>(webview: &mut WebView<'a, T>, arg: &str, tasks: &mut Vec
 
 fn open_install_helper() {
   let html = utils::generate_html(
-    vec![include_str!("view/css/styles.css")],
-    vec![include_str!("view/js/picodom.js"), include_str!("view/js/app.js")],
+    vec![],
+    vec![include_str!("view/js/main.js")],
   );
 
-  let title = "EL DEMO";
+  let title = "Electron Platform";
   let size = (800, 480);
   let resizable = true;
   let debug = true;
