@@ -2,15 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9c86895c-1906-4dc3-b69a-5886dc14847f" name="Default Changelist" comment="init">
-      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/qingyang.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../electron-plaform.env" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../src/installer.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../Cargo.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/styles/common.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/styles/common.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/helper.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../src/helper.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../src/main.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../src/view/css/styles.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../src/view/js/app.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../src/view/js/picodom.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/model.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../src/model.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../src/utils.rs" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -25,6 +25,7 @@
     <session id="550014702">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
+          <entry key="project.closed" value="1" />
           <entry key="project.open.time.1" value="2" />
           <entry key="project.opened" value="2" />
         </counts>
@@ -256,12 +257,12 @@
       <updated>1540867550656</updated>
       <workItem from="1540867551998" duration="5827000" />
       <workItem from="1540882946414" duration="67000" />
-      <workItem from="1540883066212" duration="2692000" />
+      <workItem from="1540883066212" duration="3289000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="8586000" />
+    <option name="totallyTimeSpent" value="9183000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1440" y="23" width="1920" height="1177" extended-state="6" />

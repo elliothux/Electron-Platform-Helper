@@ -4,5 +4,6 @@ pub enum Platform {
   WIN32,
   WIN64,
   LINUX32,
-  LINUX64
+  LINUX64,
+  UNKNOWN
 }
