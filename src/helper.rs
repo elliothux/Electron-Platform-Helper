@@ -56,13 +56,19 @@ fn get_runtimes_path() -> PathBuf {
 pub fn get_valid_runtime_path(version: &str) -> Option<String> {
   let runtimes_path = get_runtimes_path();
 
+  let mut valid_runtime_path = None;
   let paths = fs::read_dir(runtimes_path).unwrap();
-  for path in paths {
-    println!("Name: {}", path.unwrap().path().display());
+  for p in paths {
+    let path = path.unwrap().path();
+    if path.is_file() { break; }
+    println!("Name: {}", path.display());
   }
-  Some(String::from(""))
+  valid_runtime_path
 }
 
+fn get_version_from_path(path: Path) -> Option<(u8, u8, u8)> {
+  // TODO
+}
 pub fn is_runtime_exist(platform: Platform, version: &str) -> bool {
   let home_path = path_buf_to_string(env::home_dir().unwrap());
   let platform_path = path_buf_to_string(
