@@ -3,6 +3,9 @@ extern crate serde_derive;
 extern crate serde_json;
 extern crate web_view;
 extern crate toml;
+extern crate regex;
+#[macro_use]
+extern crate lazy_static;
 
 pub mod model;
 pub mod utils;
@@ -10,6 +13,7 @@ pub mod helper;
 pub mod installer;
 
 use std::{env, path::Path};
+use regex::Regex;
 use utils::{path_buf_to_string};
 
 
@@ -23,6 +27,7 @@ fn main() {
   match helper::get_valid_runtime_path(&config.runtime) {
     None => {
       // TODO: install runtime
+      return;
       installer::open_install_helper();
     },
     Some(runtime_path) => {

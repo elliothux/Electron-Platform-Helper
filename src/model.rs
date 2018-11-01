@@ -7,3 +7,5 @@ pub enum Platform {
   LINUX64,
   UNKNOWN
 }
+
+pub type Version = (u8, u8, u8);
