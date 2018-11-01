@@ -105,19 +105,20 @@ fn gen_path_from_version(version: Version) -> PathBuf {
     ))
 }
 
-pub fn get_valid_runtime_path(v: &str) -> Option<PathBuf> {
+pub fn get_valid_runtime_path(v: &str) -> Option<(Version, PathBuf)> {
   let version_string = String::from(v.trim());
-  if let Some((latest_version, latest_path)) = get_latest_version() {
+  let latest = get_latest_version();
+  if let Some((latest_version, latest_path)) = &latest {
     // Any version
     if version_string.eq("*") {
-      return Some(latest_path);
+      return latest.clone();
     }
 
     // Lock runtime version
     if VERSION_RE.is_match(&version_string) {
       let version = parse_version_string(&version_string);
       if is_runtime_exist(version) {
-        return Some(gen_path_from_version(version))
+        return Some((version, gen_path_from_version(version)))
       }
       return None;
     }
@@ -129,7 +130,7 @@ pub fn get_valid_runtime_path(v: &str) -> Option<PathBuf> {
             .replace("^", "")
       );
       if compare_version(&latest_version, &version) {
-        return Some(latest_path);
+        return latest.clone();
       }
     }
   }
@@ -163,4 +164,8 @@ pub fn open_app_bin() {
       .spawn()
       .expect("failed to execute process")
   };
+}
+
+pub fn link_runtime(path: &PathBuf) {
+
 }

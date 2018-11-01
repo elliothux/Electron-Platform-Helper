@@ -30,8 +30,10 @@ fn main() {
       return;
       installer::open_install_helper();
     },
-    Some(runtime_path) => {
+    Some((version, runtime_path)) => {
       // TODO: link runtime to app
+      println!("{:?} - {}", &version, runtime_path.display());
+      helper::link_runtime(&runtime_path);
       return;
       helper::open_app_bin();
     }
