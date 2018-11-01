@@ -32,74 +32,66 @@ fn get_runtimes_path() -> PathBuf {
 }
 
 fn get_version_from_path(path: &PathBuf) -> Option<Version> {
-  // TODO
+  // TODO: win32
+  let p = String::from(path.to_str().unwrap());
+  let v: Vec<&str> = p.rsplit('/').collect();
+
+  if v.len().eq(&0) {
+    return None;
+  }
+
+  let version = v[0];
+  if VERSION_RE.is_match(version) {
+    return Some(parse_version_string(version))
+  }
+
   None
 }
 
-// return true if a > b
-fn compare_version(a: Version, b: Version) -> bool {
+// return true if a >= b
+fn compare_version(a: &Version, b: &Version) -> bool {
   if a.0 > b.0 { return true; }
   else if a.0 == b.0 {
     if a.1 > b.1 { return true; }
     else if a.1 == b.1 {
-      return a.2 > b.2;
+      return a.2 >= b.2;
     }
     return false;
   }
   return false;
 }
 
-fn get_latest_version() -> (Version, PathBuf) {
-
-}
-
-fn parse_version_string(v: &str) -> Version {
-  let t = v.split(".").collect().map(|i| i as u8);
-  (t[0], t[1], t[2])
-}
-pub fn get_valid_runtime_path(v: &str) -> Option<PathBuf> {
-  let version_string = String::from_str(&v).trim();
+fn get_latest_version() -> Option<(Version, PathBuf)> {
   let runtimes_path = get_runtimes_path();
+  let mut latest_version: Option<Version> = None;
+  let mut latest_path: Option<PathBuf> = None;
 
-  // Lock runtime version
-  if VERSION_RE.is_match(&version_string) {
-    let version = parse_version_string(&version_string);
-    if is_runtime_exist(version) {
-      return Some(gen_path_from_version(version))
-    }
-    return None;
-  }
-
-  let (latest_version, latest_path) = get_latest_version();
-  //
-  if version_string == "*" {
-    return Some(latest_path);
-  }
-  // TODO
-
-  let paths = fs::read_dir(&runtimes_path).unwrap();
-
-  let mut valid_runtime_path: Option<PathBuf> = None;
-  let mut valid_runtime_version: Option<(u8, u8, u8)> = None;
-
+  let paths = fs::read_dir(runtimes_path).unwrap();
   for p in paths {
     let path = p.unwrap().path();
-    println!("Name: {}", &path.display());
+    if path.is_file() { continue; }
 
-    if let Some(curr_version) = get_version_from_path(&path) {
-      if version_string == "*" {
-        if let Some(v) = valid_runtime_version {
-
-        }
-        valid_runtime_version = get_version_from_path(&path);
-        valid_runtime_path = Some(path);
-      } else {
-
+    if let Some(version) = get_version_from_path(&path) {
+      if latest_version.eq(&None) || compare_version(&version, &latest_version.unwrap()) {
+        latest_version = Some(version);
+        latest_path = Some(path);
       }
     }
   }
 
-  valid_runtime_path
+  if let Some(version) = latest_version {
+    return Some((version, latest_path.unwrap()))
+  }
+  None
+}
+
+fn parse_version_string(v: &str) -> Version {
+  let t: Vec<u8> = v.split(".")
+      .collect::<Vec<&str>>()
+      .into_iter()
+      .map(|i: &str| String::from(i).parse::<u8>().unwrap())
+      .collect();
+  (t[0], t[1], t[2])
 }
 
 fn gen_path_from_version(version: Version) -> PathBuf {
@@ -112,6 +104,38 @@ fn gen_path_from_version(version: Version) -> PathBuf {
       )
     ))
 }
+
+pub fn get_valid_runtime_path(v: &str) -> Option<PathBuf> {
+  let version_string = String::from(v.trim());
+  if let Some((latest_version, latest_path)) = get_latest_version() {
+    // Any version
+    if version_string.eq("*") {
+      return Some(latest_path);
+    }
+
+    // Lock runtime version
+    if VERSION_RE.is_match(&version_string) {
+      let version = parse_version_string(&version_string);
+      if is_runtime_exist(version) {
+        return Some(gen_path_from_version(version))
+      }
+      return None;
+    }
+
+    // Above one version
+    if ABOVE_VERSION_RE.is_match(&version_string) {
+      let version = parse_version_string(
+        &String::from(version_string)
+            .replace("^", "")
+      );
+      if compare_version(&latest_version, &version) {
+        return Some(latest_path);
+      }
+    }
+  }
+  return None;
+}
+
 pub fn is_runtime_exist(version: Version) -> bool {
   let platform_path = get_runtimes_path();
   if !is_path_exist(&platform_path) {
