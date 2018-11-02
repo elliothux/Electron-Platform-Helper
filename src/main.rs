@@ -32,7 +32,7 @@ fn main() {
     },
     Some((version, runtime_path)) => {
       helper::link_runtime(&runtime_path);
-//      installer::open_install_helper();
+      installer::open_install_helper();
 //      helper::open_app_bin();
     }
   }
