@@ -31,11 +31,9 @@ fn main() {
       installer::open_install_helper();
     },
     Some((version, runtime_path)) => {
-      // TODO: link runtime to app
-      println!("{:?} - {}", &version, runtime_path.display());
       helper::link_runtime(&runtime_path);
-      return;
-      helper::open_app_bin();
+//      installer::open_install_helper();
+//      helper::open_app_bin();
     }
   }
 }

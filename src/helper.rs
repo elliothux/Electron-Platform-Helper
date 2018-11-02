@@ -166,6 +166,44 @@ pub fn open_app_bin() {
   };
 }
 
-pub fn link_runtime(path: &PathBuf) {
+pub fn link_runtime(runtime_path: &PathBuf) {
+  let current_path = env::current_exe().unwrap();
+  let to = &current_path
+      .parent().unwrap()
+      .parent().unwrap()
+      .join("Frameworks")
+      .to_path_buf();
 
+  let paths = fs::read_dir(runtime_path).unwrap();
+  for p in paths {
+    let path = p.unwrap().path();
+    if path.to_str().unwrap().contains(".DS_Store") {
+      continue;
+    }
+    let from = &path;
+    link_file(from, to);
+  }
+}
+
+fn link_file(from: &PathBuf, to: &PathBuf) {
+  if cfg!(target_os = "windows") {
+    // TODO: Windows
+    Command::new("cmd")
+        .args(&["/C", "echo hello"])
+        .output()
+        .expect("failed to execute process");
+  } else {
+    Command::new("ln")
+        .args(&[
+          "-s",
+          "-f",
+          from.to_str().unwrap(),
+          to.to_str().unwrap()
+        ])
+        .spawn()
+        .unwrap()
+        .wait()
+        .expect("failed to execute process");
+    println!("{}-{}", from.display(), to.display());
+  };
 }
