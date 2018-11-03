@@ -1,7 +1,7 @@
 
 use toml;
 use std::io::prelude::*;
-use std::{env, fs::File};
+use std::{env, fs, fs::File};
 use std::path::{Path, PathBuf};
 use model::Platform;
 
@@ -25,6 +25,9 @@ pub fn read_file_to_string(path: PathBuf) -> String {
   f.read_to_string(&mut contents)
     .expect("something went wrong reading the file");
   contents
+}
+
+pub fn write_string_to_file(path: &PathBuf, content: &str) {
 }
 
 // platform

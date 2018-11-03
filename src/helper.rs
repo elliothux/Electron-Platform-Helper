@@ -1,7 +1,8 @@
 
+use std::io::prelude::*;
 use lazy_static;
 use regex::Regex;
-use std::{env, fs};
+use std::{env, fs, process};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use model::{Platform, Version};
@@ -96,11 +97,10 @@ fn parse_version_string(v: &str) -> Version {
 
 fn gen_path_from_version(version: Version) -> PathBuf {
   let platform_path = get_runtimes_path();
-  let platform = get_current_platform_string();
   Path::new(&platform_path)
     .join(Path::new(
-      &format!("runtime/{}/{}.{}.{}",
-               platform, version.0, version.1, version.2
+      &format!("{}.{}.{}",
+         version.0, version.1, version.2
       )
     ))
 }

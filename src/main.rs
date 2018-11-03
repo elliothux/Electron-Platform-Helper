@@ -27,13 +27,12 @@ fn main() {
   match helper::get_valid_runtime_path(&config.runtime) {
     None => {
       // TODO: install runtime
-      return;
+      println!("{}", &config.runtime);
       installer::open_install_helper();
     },
     Some((version, runtime_path)) => {
       helper::link_runtime(&runtime_path);
-      installer::open_install_helper();
-//      helper::open_app_bin();
+      helper::open_app_bin();
     }
   }
 }
