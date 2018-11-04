@@ -12,12 +12,14 @@ use utils::{
   get_current_platform_string
 };
 
+pub fn get_platform_path() -> PathBuf {
+    let home_path = env::home_dir().unwrap();
+    Path::new(&home_path)
+        .join(Path::new(".electron-platform"))
+}
 
-fn get_runtimes_path() -> PathBuf {
-  let home_path = env::home_dir().unwrap();
-  let platform_path = Path::new(&home_path)
-    .join(Path::new(".electron-platform"));
-  Path::new(&platform_path)
+pub fn get_runtimes_path() -> PathBuf {
+  Path::new(&get_platform_path())
     .join(Path::new(
       &format!("runtime/{}",
          &get_current_platform_string(),
@@ -79,13 +81,17 @@ fn get_latest_version() -> Option<(Version, PathBuf)> {
   None
 }
 
-fn parse_version_string(v: &str) -> Version {
+pub fn parse_version_string(v: &str) -> Version {
   let t: Vec<u8> = v.split(".")
       .collect::<Vec<&str>>()
       .into_iter()
       .map(|i: &str| String::from(i).parse::<u8>().unwrap())
       .collect();
   (t[0], t[1], t[2])
+}
+
+pub fn version_to_string(v: Version) -> String {
+    format!("{}-{}-{}", v.0, v.1, v.2)
 }
 
 fn gen_path_from_version(version: Version) -> PathBuf {

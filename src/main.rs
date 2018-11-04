@@ -31,6 +31,7 @@ fn main() {
     None => {
       // TODO: install runtime
       println!("{}", &config.runtime);
+      println!("{:?}", downloader::get_latest_version().unwrap());
       installer::open_install_helper();
     },
     Some((version, runtime_path)) => {

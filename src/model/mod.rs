@@ -9,3 +9,8 @@ pub enum Platform {
 }
 
 pub type Version = (u8, u8, u8);
+
+#[derive(Deserialize, Debug)]
+pub struct ReleaseResponse {
+  pub name: String
+}
