@@ -6,11 +6,14 @@ extern crate toml;
 extern crate regex;
 #[macro_use]
 extern crate lazy_static;
+extern crate reqwest;
 
 pub mod model;
 pub mod utils;
 pub mod helper;
 pub mod installer;
+pub mod downloader;
+pub mod statics;
 
 use std::{env, path::Path};
 use regex::Regex;
@@ -32,7 +35,7 @@ fn main() {
     },
     Some((version, runtime_path)) => {
       helper::link_runtime(&runtime_path);
-      helper::open_app_bin();
+//      helper::open_app_bin();
     }
   }
 }

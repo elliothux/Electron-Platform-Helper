@@ -1,23 +1,16 @@
 
 use std::io::prelude::*;
 use lazy_static;
-use regex::Regex;
 use std::{env, fs, process};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use model::{Platform, Version};
+use statics::{VERSION_RE, ABOVE_VERSION_RE};
 use utils::{
   path_buf_to_string,
   is_path_exist,
   get_current_platform_string
 };
-
-
-
-lazy_static! {
-  static ref VERSION_RE: Regex = Regex::new(r"^\d+\.\d+\.\d+$").unwrap();
-  static ref ABOVE_VERSION_RE: Regex = Regex::new(r"^\^\d+\.\d+\.\d+$").unwrap();
-}
 
 
 fn get_runtimes_path() -> PathBuf {
