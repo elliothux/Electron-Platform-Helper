@@ -3,7 +3,7 @@ use reqwest::get;
 use std::io;
 use std::io::prelude::*;
 use std::fs::File;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use model::{Version, ReleaseResponse, Platform};
 use statics::{VERSION_RE, ABOVE_VERSION_RE};
 use helper;
@@ -14,15 +14,19 @@ pub fn download_runtime(v: &str) -> Option<Version> {
     let valid_version = get_valid_runtime_version(v);
     if let Some(version) = valid_version {
         let temp_path = helper::get_platform_path().join("./temp");
+        let download_url = get_runtime_url(version);
+        let filename = format!("{}.zip", helper::version_to_string(version));
         println!("{}", temp_path.display());
-        println!("{}", &get_runtime_url(version))
+        println!("{}", &download_url);
+        download_to(&download_url, &filename, &temp_path);
     }
     None
 }
 
-fn download_to(url: &str, path: &str) {
+fn download_to(url: &str, filename: &str, path: &PathBuf) {
     let mut resp = get(url).expect("request failed");
-    let mut out = File::create("rustup-init.sh").expect("failed to create file");
+    let mut out = File::create(path.join(filename))
+      .expect("failed to create file");
     io::copy(&mut resp, &mut out).expect("failed to copy content");
 }
 
