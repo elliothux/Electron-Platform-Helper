@@ -7,6 +7,7 @@ extern crate regex;
 #[macro_use]
 extern crate lazy_static;
 extern crate reqwest;
+extern crate zip;
 
 pub mod model;
 pub mod utils;

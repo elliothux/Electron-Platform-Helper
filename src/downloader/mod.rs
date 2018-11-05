@@ -1,4 +1,5 @@
 
+use zip::read::read_zipfile_from_stream;
 use reqwest::get;
 use std::io;
 use std::io::prelude::*;
@@ -18,16 +19,38 @@ pub fn download_runtime(v: &str) -> Option<Version> {
         let filename = format!("{}.zip", helper::version_to_string(version));
         println!("{}", temp_path.display());
         println!("{}", &download_url);
-        download_to(&download_url, &filename, &temp_path);
+        if let Ok(file_path) = download_file(&download_url, &filename, &temp_path) {
+
+        }
+        None
     }
     None
 }
 
-fn download_to(url: &str, filename: &str, path: &PathBuf) {
-    let mut resp = get(url).expect("request failed");
-    let mut out = File::create(path.join(filename))
-      .expect("failed to create file");
-    io::copy(&mut resp, &mut out).expect("failed to copy content");
+fn unzip_file(file_path: PathBuf, to: PathBuf) -> Result<(), io::Error> {
+    let mut file = File::open(file_path).unwrap();
+    let zip = read_zipfile_from_stream(f);
+    match zip {
+        Ok(Some(zip_file)) => {
+            Ok(())
+        },
+        _ => Err(io::Error::from("Unzip failed"))
+    }
+}
+
+fn download_file(url: &str, filename: &str, path: &PathBuf) -> Result<PathBuf, io::Error> {
+    let file_path = path.join(filename);
+    match get(url) {
+        Ok(mut resp) => {
+            let mut out = File::create(file_path)
+                .expect("failed to create file");
+            match io::copy(&mut resp, &mut out) {
+                Ok(_) => Ok(file_path),
+                Err(_) => Err(io::Error::from("Download failed"))
+            }
+        },
+        Err(_) => Err(io::Error::from("Request failed"))
+    }
 }
 
 fn get_runtime_url(version: Version) -> String {
@@ -36,38 +59,40 @@ fn get_runtime_url(version: Version) -> String {
 
     let platform = utils::get_current_platform();
     let mut platform_string: String = match platform {
-        Platform::UNKNOWN => { panic!("Unsupported platform"); }
-        Platform::DARWIN => { String::from("darwin-x64") }
-        Platform::WIN32 => { String::from("win32-ia32") }
-        Platform::WIN64 => { String::from("win32-x64") }
-        Platform::LINUX32 => { String::from("linux-ia32") }
-        Platform::LINUX64 => { String::from("linux-x64") }
+        Platform::UNKNOWN => panic!("Unsupported platform"),
+        Platform::DARWIN => String::from("darwin-x64"),
+        Platform::WIN32 => String::from("win32-ia32"),
+        Platform::WIN64 => String::from("win32-x64"),
+        Platform::LINUX32 => String::from("linux-ia32"),
+        Platform::LINUX64 => String::from("linux-x64")
     };
 
     format!("{}/electron-v{}-{}.zip", prefix, v, platform_string)
 }
 
-fn get_valid_runtime_version(v: &str) -> Option<Version> {
+fn get_valid_runtime_version(v: &str) -> Result<Version, io::Error> {
     // Lock runtime version
     if VERSION_RE.is_match(v) {
-        return Some(helper::parse_version_string(v));
+        Ok(helper::parse_version_string(v))
     }
 
     // Above one version
-    if ABOVE_VERSION_RE.is_match(v) {
-        return get_latest_version();
+    else if ABOVE_VERSION_RE.is_match(v) {
+        get_latest_version()
     }
 
-    None
+    else {
+        Err(io::Error::from("Invalid config 'version'"))
+    }
 }
 
-pub fn get_latest_version() -> Option<Version> {
+pub fn get_latest_version() -> Result<Version, io::Error> {
     let request = get("https://api.github.com/repos/electron/electron/tags");
     match request {
-        Err(_) => { return None; }
+        Err(_) => Err(io::Error::from("Request failed")),
         Ok(mut response) => {
             match response.json::<Vec<ReleaseResponse>>() {
-                Err(_) => { return None; }
+                Err(_) => Err(io::Error::from("Parse json error")),
                 Ok(result) => {
                     let versions = &result
                         .into_iter()
@@ -79,7 +104,7 @@ pub fn get_latest_version() -> Option<Version> {
                         })
                         .collect::<Vec<Version>>();
                     let latest = versions[0];
-                    Some(latest)
+                    Ok(latest)
                 }
             }
         }
