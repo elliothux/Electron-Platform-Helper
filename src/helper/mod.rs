@@ -91,7 +91,7 @@ pub fn parse_version_string(v: &str) -> Version {
 }
 
 pub fn version_to_string(v: Version) -> String {
-    format!("{}-{}-{}", v.0, v.1, v.2)
+    format!("{}.{}.{}", v.0, v.1, v.2)
 }
 
 fn gen_path_from_version(version: Version) -> PathBuf {

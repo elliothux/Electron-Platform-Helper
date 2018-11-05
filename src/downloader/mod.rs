@@ -4,17 +4,20 @@ use std::io;
 use std::io::prelude::*;
 use std::fs::File;
 use std::path::Path;
-use model::{Version, ReleaseResponse};
+use model::{Version, ReleaseResponse, Platform};
 use statics::{VERSION_RE, ABOVE_VERSION_RE};
 use helper;
+use utils;
 
 
-pub fn download_runtime(v: &str) {
+pub fn download_runtime(v: &str) -> Option<Version> {
     let valid_version = get_valid_runtime_version(v);
     if let Some(version) = valid_version {
         let temp_path = helper::get_platform_path().join("./temp");
         println!("{}", temp_path.display());
+        println!("{}", &get_runtime_url(version))
     }
+    None
 }
 
 fn download_to(url: &str, path: &str) {
@@ -24,22 +27,20 @@ fn download_to(url: &str, path: &str) {
 }
 
 fn get_runtime_url(version: Version) -> String {
-    let v = format!("v{}", helper::version_to_string(version));
-    if cfg!(target_os = "macos") {
+    let v = helper::version_to_string(version);
+    let prefix = format!("https://npm.taobao.org/mirrors/electron/{}", v);
 
-    } else if cfg!(target_os = "windows") {
-        if cfg!(target_pointer_width = "32") {
-
-        } else if cfg!(target_pointer_width = "64") {
-
-        }
-    } else if cfg!(target_os = "linux") {
-        if cfg!(target_pointer_width = "32") {
-
-        } else if cfg!(target_pointer_width = "64") {
-
-        }
+    let platform = utils::get_current_platform();
+    let mut platform_string: String = match platform {
+        Platform::UNKNOWN => { panic!("Unsupported platform"); }
+        Platform::DARWIN => { String::from("darwin-x64") }
+        Platform::WIN32 => { String::from("win32-ia32") }
+        Platform::WIN64 => { String::from("win32-x64") }
+        Platform::LINUX32 => { String::from("linux-ia32") }
+        Platform::LINUX64 => { String::from("linux-x64") }
     };
+
+    format!("{}/electron-v{}-{}.zip", prefix, v, platform_string)
 }
 
 fn get_valid_runtime_version(v: &str) -> Option<Version> {
