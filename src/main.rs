@@ -32,6 +32,9 @@ fn main() {
     None => {
       // TODO: install runtime
       println!("{}", &config.runtime);
+      downloader::unzip_file(std::path::PathBuf::from("/Users/qingyang/.electron-platform/temp/1.6.10.zip"),
+                             std::path::PathBuf::from("/Users/qingyang/.electron-platform/temp/"));
+      return;
       match downloader::download_runtime(&config.runtime) {
         None => {
           // TODO: DOWNLOAD FAIL
