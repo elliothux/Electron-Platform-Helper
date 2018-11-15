@@ -11,7 +11,7 @@ pub fn is_path_exist(path: &PathBuf) -> bool {
   Path::new(path).exists()
 }
 
-pub fn path_buf_to_string(path: PathBuf) -> String {
+pub fn path_buf_to_string(path: &PathBuf) -> String {
   path
     .to_str()
     .unwrap()

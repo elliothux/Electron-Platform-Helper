@@ -156,7 +156,7 @@ pub fn open_app_bin() {
       .expect("failed to execute process")
   } else {
     let bin_path = path_buf_to_string(
-      Path::new(&current_path)
+      &Path::new(&current_path)
         .with_file_name("App")
     );
     Command::new(&bin_path)

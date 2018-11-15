@@ -1,8 +1,9 @@
-use zip;
+use unzip;
 use reqwest::get;
 use std::{io, fs};
 use std::io::prelude::*;
 use std::fs::File;
+use std::process::Command;
 use std::path::{Path, PathBuf};
 use model::{Version, ReleaseResponse, Platform};
 use statics::{VERSION_RE, ABOVE_VERSION_RE};
@@ -17,57 +18,13 @@ pub fn download_runtime(v: &str) -> Option<Version> {
       let temp_path = helper::get_platform_path().join("./temp");
       let download_url = get_runtime_url(version);
       let filename = format!("{}.zip", helper::version_to_string(version));
-      println!("{}", temp_path.display());
       println!("{}", &download_url);
-      if let Ok(file_path) = download_file(&download_url, &filename, &temp_path) {}
-      None
-    }
-  }
-}
-
-pub fn unzip_file(file_path: PathBuf, to: PathBuf) -> Result<(), String> {
-  let mut file = File::open(file_path).unwrap();
-  let mut archive_result = zip::ZipArchive::new(file);
-  match archive_result {
-    Ok(mut archive) => {
-      for i in 0..archive.len() {
-        let mut file = archive.by_index(i).unwrap();
-        let outpath = to.join(file.sanitized_name());
-
-        {
-          let comment = file.comment();
-          if !comment.is_empty() {
-            println!("File {} comment: {}", i, comment);
-          }
-        }
-
-        if (&*file.name()).ends_with('/') {
-          println!("File {} extracted to \"{}\"", i, outpath.as_path().display());
-          fs::create_dir_all(&outpath).unwrap();
-        } else {
-          println!("File {} extracted to \"{}\" ({} bytes)", i, outpath.as_path().display(), file.size());
-          if let Some(p) = outpath.parent() {
-            if !p.exists() {
-              fs::create_dir_all(&p).unwrap();
-            }
-          }
-          let mut outfile = fs::File::create(&outpath).unwrap();
-          io::copy(&mut file, &mut outfile).unwrap();
-        }
-
-        // Get and Set permissions
-        #[cfg(unix)]
-          {
-            use std::os::unix::fs::PermissionsExt;
-
-            if let Some(mode) = file.unix_mode() {
-              fs::set_permissions(&outpath, fs::Permissions::from_mode(mode)).unwrap();
-            }
-          }
+      if let Ok(file_path) = download_file(&download_url, &filename, &temp_path) {
+        Some(version)
+      } else {
+        None
       }
-      Ok(())
     }
-    _ => Err("Unzip failed".to_owned())
   }
 }
 

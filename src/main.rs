@@ -7,7 +7,7 @@ extern crate regex;
 #[macro_use]
 extern crate lazy_static;
 extern crate reqwest;
-extern crate zip;
+extern crate unzip;
 
 pub mod model;
 pub mod utils;
@@ -30,16 +30,16 @@ fn main() {
 
   match helper::get_valid_runtime_path(&config.runtime) {
     None => {
-      // TODO: install runtime
       println!("{}", &config.runtime);
-      downloader::unzip_file(std::path::PathBuf::from("/Users/qingyang/.electron-platform/temp/1.6.10.zip"),
-                             std::path::PathBuf::from("/Users/qingyang/.electron-platform/temp/"));
+      installer::install_runtime((1, 6, 10));
       return;
       match downloader::download_runtime(&config.runtime) {
         None => {
           // TODO: DOWNLOAD FAIL
         }
         Some(v) => {
+          installer::install_runtime(v);
+          return;
           installer::open_install_helper();
         }
       }
