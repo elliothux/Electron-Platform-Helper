@@ -23,16 +23,16 @@ pub fn open_install_helper() {
     let resizable = true;
     let debug = true;
 
-    let state = vec![];
+    let state: Vec<rpc::StateItem> = vec![];
 
-    let (tasks, _) = run(
+    run(
         title,
         Content::Html(html),
         Some(size),
         resizable,
         debug,
-        rpc::init_callback,
-        rpc::rpc_exec_callback,
+        |_| {},
+        rpc::exec_callback,
         state
     );
 }
