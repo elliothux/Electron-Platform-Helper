@@ -1,19 +1,25 @@
-import React, { Component } from 'react';
-import Background from '../Background';
+import React, { Component } from "react";
+import Background from "../Background";
+import * as rpc from "../../utils/rpc";
 
-import LOGO from '../../static/images/logo.png';
+import LOGO from "../../static/images/logo.png";
 
-import './index.scss';
+import "./index.scss";
 
 class App extends Component {
+  state = {
+    text: "初始化"
+  };
+
   render() {
+    rpc.log("render");
     return (
       <div className="App">
         <div className="main">
           <img className="logo" src={LOGO} alt="" />
           <p>Electron Platform</p>
         </div>
-        <Background/>
+        <Background />
       </div>
     );
   }

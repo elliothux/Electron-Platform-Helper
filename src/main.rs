@@ -15,6 +15,7 @@ pub mod helper;
 pub mod installer;
 pub mod downloader;
 pub mod statics;
+pub mod rpc;
 
 use std::{env, path::Path};
 use regex::Regex;
@@ -28,11 +29,11 @@ fn main() {
     return;
   }
 
+  installer::open_install_helper();
+  return;
+
   match helper::get_valid_runtime_path(&config.runtime) {
     None => {
-      println!("{}", &config.runtime);
-      installer::install_runtime((1, 6, 10));
-      return;
       match downloader::download_runtime(&config.runtime) {
         None => {
           // TODO: DOWNLOAD FAIL
