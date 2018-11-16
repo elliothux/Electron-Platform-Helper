@@ -29,25 +29,14 @@ fn main() {
     return;
   }
 
-  installer::open_install_helper();
-  return;
-
   match helper::get_valid_runtime_path(&config.runtime) {
     None => {
-      match downloader::download_runtime(&config.runtime) {
-        None => {
-          // TODO: DOWNLOAD FAIL
-        }
-        Some(v) => {
-          installer::install_runtime(v);
-          return;
-          installer::open_install_helper();
-        }
-      }
+      installer::open_install_helper(config);
     },
     Some((version, runtime_path)) => {
       helper::link_runtime(&runtime_path);
-//      helper::open_app_bin();
+      // TODO: mark installed
+      helper::open_app_bin();
     }
   }
 }

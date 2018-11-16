@@ -1,5 +1,6 @@
 
 use web_view::{WebView, MyUnique};
+use installer;
 
 #[allow(non_camel_case_types)]
 #[derive(Deserialize)]
@@ -28,6 +29,7 @@ pub struct StateItem {}
 fn init<T>(webview: &mut WebView<T>) {
     define_readonly_value("window", "rpc", "{}", webview);
     define_readonly_value("window.rpc", "eventPool", "[]", webview);
+    installer::install(webview);
 }
 
 fn define_readonly_value<T>(obj: &str, key: &str, value: &str, webview: &mut WebView<T>) {

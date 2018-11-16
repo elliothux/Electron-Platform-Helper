@@ -10,9 +10,12 @@ use model::{Version};
 use std::path::{PathBuf, Path};
 use std::fs;
 use std::process::Command;
+use helper;
+use model;
+use utils;
 
 
-pub fn open_install_helper() {
+pub fn open_install_helper(config: utils::Config) {
     let html = utils::generate_html(
         vec![],
         vec![include_str!("../view/js/main.js")],
@@ -35,6 +38,20 @@ pub fn open_install_helper() {
         rpc::exec_callback,
         state
     );
+}
+
+pub fn install<T>(webview: &mut WebView<T>) {
+    // TODO: Update render state
+    match downloader::download_runtime(&config.runtime) {
+        None => {
+            // TODO: DOWNLOAD FAIL
+        }
+        Some(v) => {
+            install_runtime(v);
+            return;
+            open_install_helper();
+        }
+    }
 }
 
 pub fn install_runtime(v: Version) -> Result<(), String> {
