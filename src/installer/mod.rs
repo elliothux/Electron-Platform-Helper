@@ -10,15 +10,17 @@ use model::{Version};
 use std::path::{PathBuf, Path};
 use std::fs;
 use std::process::Command;
-use helper;
 use model;
-use utils;
+use statics;
 
 
-pub fn open_install_helper(config: utils::Config) {
+pub fn open_install_helper() {
     let html = utils::generate_html(
         vec![],
-        vec![include_str!("../view/js/main.js")],
+        vec![
+            include_str!("../view/js/rpc.js"),
+            include_str!("../view/js/main.js"),
+        ],
     );
 
     let title = "Electron Platform";
@@ -42,16 +44,17 @@ pub fn open_install_helper(config: utils::Config) {
 
 pub fn install<T>(webview: &mut WebView<T>) {
     // TODO: Update render state
-    match downloader::download_runtime(&config.runtime) {
-        None => {
-            // TODO: DOWNLOAD FAIL
-        }
-        Some(v) => {
-            install_runtime(v);
-            return;
-            open_install_helper();
-        }
-    }
+    let config = &statics::CONFIG;
+    rpc::dispatch_to_render("init", "", webview);
+    println!("111");
+//    match downloader::download_runtime(&config.runtime) {
+//        None => {
+//            // TODO: DOWNLOAD FAIL
+//        }
+//        Some(v) => {
+//            install_runtime(v);
+//        }
+//    }
 }
 
 pub fn install_runtime(v: Version) -> Result<(), String> {

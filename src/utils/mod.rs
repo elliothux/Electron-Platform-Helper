@@ -3,7 +3,7 @@ use toml;
 use std::io::prelude::*;
 use std::{env, fs, fs::File};
 use std::path::{Path, PathBuf};
-use model::Platform;
+use model::{Platform, Config};
 
 
 
@@ -65,14 +65,6 @@ pub fn get_current_platform_string() -> String {
   platform_to_str(
     get_current_platform()
   )
-}
-
-// config
-#[derive(Deserialize)]
-pub struct Config {
-  pub target: String,
-  pub runtime: String,
-  pub installed: bool
 }
 
 pub fn get_config() -> Config {

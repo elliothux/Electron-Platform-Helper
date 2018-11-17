@@ -14,3 +14,10 @@ pub type Version = (u8, u8, u8);
 pub struct ReleaseResponse {
   pub name: String
 }
+
+#[derive(Deserialize)]
+pub struct Config {
+  pub target: String,
+  pub runtime: String,
+  pub installed: bool
+}

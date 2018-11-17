@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import Background from "../Background";
-import * as rpc from "../../utils/rpc";
 
 import LOGO from "../../static/images/logo.png";
 
@@ -8,13 +7,13 @@ import "./index.scss";
 
 class App extends Component {
   state = {
-    state: "init",
+    state: "",
     error: "",
     version: ""
   };
 
   componentDidMount() {
-    rpc.addEventListener("stateChange", arg => {
+    window.rpc.addEventListener("stateChange", arg => {
       const { state, version, error } = arg;
       const s = { state };
       if (version) s.version = version;
@@ -36,7 +35,7 @@ class App extends Component {
   }
 
   render() {
-    rpc.log("render");
+    window.rpc.log("render");
     return (
       <div className="App">
         <div className="main">

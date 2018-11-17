@@ -23,7 +23,7 @@ use utils::{path_buf_to_string};
 
 
 fn main() {
-  let config = utils::get_config();
+  let config = &statics::CONFIG;
   if config.installed {
     helper::open_app_bin();
     return;
@@ -31,7 +31,7 @@ fn main() {
 
   match helper::get_valid_runtime_path(&config.runtime) {
     None => {
-      installer::open_install_helper(config);
+      installer::open_install_helper();
     },
     Some((version, runtime_path)) => {
       helper::link_runtime(&runtime_path);
