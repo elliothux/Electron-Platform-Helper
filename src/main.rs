@@ -8,6 +8,8 @@ extern crate regex;
 extern crate lazy_static;
 extern crate reqwest;
 extern crate unzip;
+extern crate timer;
+extern crate chrono;
 
 pub mod model;
 pub mod utils;

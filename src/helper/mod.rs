@@ -90,7 +90,7 @@ pub fn parse_version_string(v: &str) -> Version {
   (t[0], t[1], t[2])
 }
 
-pub fn version_to_string(v: Version) -> String {
+pub fn version_to_string(v: &Version) -> String {
     format!("{}.{}.{}", v.0, v.1, v.2)
 }
 

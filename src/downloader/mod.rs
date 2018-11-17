@@ -11,20 +11,15 @@ use helper;
 use utils;
 
 
-pub fn download_runtime(v: &str) -> Option<Version> {
-  match get_valid_runtime_version(v)  {
-    Err(_) => None,
-    Ok(version) => {
-      let temp_path = helper::get_platform_path().join("./temp");
-      let download_url = get_runtime_url(version);
-      let filename = format!("{}.zip", helper::version_to_string(version));
-      println!("{}", &download_url);
-      if let Ok(file_path) = download_file(&download_url, &filename, &temp_path) {
-        Some(version)
-      } else {
-        None
-      }
-    }
+pub fn download_runtime(version: &Version) -> Option<&Version> {
+  let temp_path = helper::get_platform_path().join("./temp");
+  let download_url = get_runtime_url(&version);
+  let filename = format!("{}.zip", helper::version_to_string(&version));
+  println!("{}", &download_url);
+  if let Ok(file_path) = download_file(&download_url, &filename, &temp_path) {
+    Some(&version)
+  } else {
+    None
   }
 }
 
@@ -43,7 +38,7 @@ fn download_file(url: &str, filename: &str, path: &PathBuf) -> Result<PathBuf, S
   }
 }
 
-fn get_runtime_url(version: Version) -> String {
+fn get_runtime_url(version: &Version) -> String {
   let v = helper::version_to_string(version);
   let prefix = format!("https://npm.taobao.org/mirrors/electron/{}", v);
 
@@ -60,7 +55,7 @@ fn get_runtime_url(version: Version) -> String {
   format!("{}/electron-v{}-{}.zip", prefix, v, platform_string)
 }
 
-fn get_valid_runtime_version(v: &str) -> Result<Version, String> {
+pub fn get_valid_runtime_version(v: &str) -> Result<Version, String> {
   if VERSION_RE.is_match(v) {
     // Lock runtime version
     Ok(helper::parse_version_string(v))

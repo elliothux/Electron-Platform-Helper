@@ -24,6 +24,14 @@
     .state-text {
       font-size: 16px;
     }
+    .error-text {
+      font-size: 14px;
+      display: none;
+      opacity: 0.6;
+      &.show {
+        display: block;
+      }
+    }
   }
 }
 

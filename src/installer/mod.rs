@@ -12,6 +12,9 @@ use std::fs;
 use std::process::Command;
 use model;
 use statics;
+use timer;
+use chrono;
+use std::sync::mpsc::channel;
 
 
 pub fn open_install_helper() {
@@ -44,38 +47,81 @@ pub fn open_install_helper() {
 
 pub fn install<T>(webview: &mut WebView<T>) {
     // TODO: Update render state
-    let config = &statics::CONFIG;
-    rpc::dispatch_to_render("init", "", webview);
-    println!("111");
-//    match downloader::download_runtime(&config.runtime) {
-//        None => {
-//            // TODO: DOWNLOAD FAIL
-//        }
-//        Some(v) => {
-//            install_runtime(v);
-//        }
-//    }
-}
+    rpc::dispatch(
+        "stateChange",
+        "{ state: 'init' }",
+        webview
+    );
 
-pub fn install_runtime(v: Version) -> Result<(), String> {
-    match unzip_runtime(v) {
-        Err(why) => Err(why),
-        Ok(unzip_path) => {
-            let runtime_path = unzip_path.join("Electron.app/Contents/Frameworks");
-            let target_path = helper::get_runtimes_path()
-                .join(helper::version_to_string(v));
-            let move_result = fs::rename(runtime_path, target_path);
-            fs::remove_dir_all(&unzip_path);
-            if let Ok(_) = move_result {
-                Ok(())
-            } else {
-                Err("Move runtime files failed".to_owned())
+    let config = &statics::CONFIG;
+    match downloader::get_valid_runtime_version(&config.runtime)  {
+        Err(_) => {
+            return rpc::dispatch(
+                "stateChange",
+                "{ state: 'error', error: 'Get valid runtime version failed.' }",
+                webview
+            );
+        },
+        Ok(version) => {
+            rpc::dispatch(
+                "stateChange",
+                &format!(
+                    "{{ state: 'download', version: {} }}",
+                    helper::version_to_string(&version)
+                ),
+                webview
+            );
+            match downloader::download_runtime(&version) {
+                None => {
+                    return rpc::dispatch(
+                        "stateChange",
+                        "{ state: 'error', error: 'Download runtime failed.' }",
+                        webview
+                    );
+                }
+                Some(v) => {
+                    rpc::dispatch(
+                        "stateChange",
+                        "{ state: 'unzip' }",
+                        webview
+                    );
+                    match unzip_runtime(&v) {
+                        Err(why) => {
+                            return rpc::dispatch(
+                                "stateChange",
+                                "{ state: 'error', error: 'Unzip runtime failed.' }",
+                                webview
+                            );
+                        },
+                        Ok(unzip_path) => {
+                            rpc::dispatch(
+                                "stateChange",
+                                "{ state: 'install' }",
+                                webview
+                            );
+                            install_runtime(unzip_path, &v);
+                        }
+                    }
+                }
             }
         }
     }
 }
 
-fn unzip_runtime(v: Version) -> Result<PathBuf, String> {
+pub fn install_runtime(unzip_path: PathBuf, v: &Version) -> Result<(), String> {
+    let runtime_path = unzip_path.join("Electron.app/Contents/Frameworks");
+    let target_path = helper::get_runtimes_path()
+        .join(helper::version_to_string(v));
+    let move_result = fs::rename(runtime_path, target_path);
+    fs::remove_dir_all(&unzip_path);
+    if let Ok(_) = move_result {
+        Ok(())
+    } else {
+        Err("Move runtime files failed".to_owned())
+    }
+}
+
+pub fn unzip_runtime(v: &Version) -> Result<PathBuf, String> {
     let from = helper::get_platform_path()
         .join(format!("temp/{}.zip", helper::version_to_string(v)));
     let to = helper::get_platform_path()

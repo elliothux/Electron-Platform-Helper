@@ -35,9 +35,11 @@
             if (!handlers) { return; }
             handlers.forEach(i => i(arg));
          }],
-         ['call', function(command) {
+         ['call', function(command, arg) {
             console.log(command);
-             window.external.invoke(JSON.stringify(command));
+             window.external.invoke(JSON.stringify(
+                 Object.assign({ cmd: command }, command)
+             ));
          }],
          ['log', function(...args) {
              const text = args.map(i => JSON.stringify(i, "", 4)).join("\n");
@@ -46,7 +48,6 @@
      ].map(i => defineRPCProps(i[0], i[1]));
 
      var eventsMap = window.rpc.eventsMap;
-     window.rpc.call({ cmd: 'init' });
  }
 
  initRPC();

@@ -5,6 +5,8 @@ import LOGO from "../../static/images/logo.png";
 
 import "./index.scss";
 
+const { rpc } = window;
+
 class App extends Component {
   state = {
     state: "",
@@ -13,13 +15,15 @@ class App extends Component {
   };
 
   componentDidMount() {
-    window.rpc.addEventListener("stateChange", arg => {
+    rpc.addEventListener("stateChange", arg => {
       const { state, version, error } = arg;
       const s = { state };
       if (version) s.version = version;
       if (error) s.error = error;
       this.setState(s);
     });
+    rpc.log("mounted");
+    rpc.call("install");
   }
 
   get stateText() {
@@ -42,6 +46,13 @@ class App extends Component {
           <img className="logo" src={LOGO} alt="" />
           <p>Electron Platform</p>
           <p className="state-text">{this.stateText}</p>
+          <p
+            className={`error-text ${
+              this.state.state === "error" ? "show" : ""
+            }`}
+          >
+            {this.state.error}
+          </p>
         </div>
         <Background />
       </div>
