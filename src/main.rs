@@ -10,6 +10,8 @@ extern crate reqwest;
 extern crate unzip;
 extern crate timer;
 extern crate chrono;
+extern crate futures;
+extern crate tokio;
 
 pub mod model;
 pub mod utils;

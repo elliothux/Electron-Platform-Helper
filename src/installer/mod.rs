@@ -63,6 +63,27 @@ pub fn install<T>(webview: &mut WebView<T>) {
             );
         },
         Ok(version) => {
+            println!("{:?}", &version);
+            rpc::dispatch(
+                "stateChange",
+                &format!(
+                    "{{ state: 'download', version: {} }}",
+                    helper::version_to_string(&version)
+                ),
+                webview
+            );
+        }
+    }
+    return;
+    match downloader::get_valid_runtime_version(&config.runtime)  {
+        Err(_) => {
+            return rpc::dispatch(
+                "stateChange",
+                "{ state: 'error', error: 'Get valid runtime version failed.' }",
+                webview
+            );
+        },
+        Ok(version) => {
             rpc::dispatch(
                 "stateChange",
                 &format!(

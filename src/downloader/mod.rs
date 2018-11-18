@@ -1,5 +1,5 @@
 use unzip;
-use reqwest::get;
+use reqwest;
 use std::{io, fs};
 use std::io::prelude::*;
 use std::fs::File;
@@ -9,6 +9,7 @@ use model::{Version, ReleaseResponse, Platform};
 use statics::{VERSION_RE, ABOVE_VERSION_RE};
 use helper;
 use utils;
+use futures::{self, Future, Stream};
 
 
 pub fn download_runtime(version: &Version) -> Option<&Version> {
@@ -25,7 +26,7 @@ pub fn download_runtime(version: &Version) -> Option<&Version> {
 
 fn download_file(url: &str, filename: &str, path: &PathBuf) -> Result<PathBuf, String> {
   let file_path = path.join(filename);
-  match get(url) {
+  match reqwest::get(url) {
     Ok(mut resp) => {
       let mut out = File::create(&file_path)
         .expect("failed to create file");
@@ -67,8 +68,27 @@ pub fn get_valid_runtime_version(v: &str) -> Result<Version, String> {
   }
 }
 
+pub fn get_latest_version_async() -> impl Future<Item=String, Error=String> {
+  reqwest::async::Client::new()
+      .get("https://api.github.com/repos/electron/electron/tags")
+      .send()
+      .and_then(|mut res| {
+        println!("{}", res.status());
+        let body = ::std::mem::replace(
+          res.body_mut(),
+          reqwest::async::Decoder::empty()
+        );
+        body.concat2()
+      })
+      .map_err(|err| format!("request error: {}", err))
+      .map(|body| {
+        let v = body.to_vec();
+        String::from_utf8_lossy(&v).to_string()
+      })
+}
+
 pub fn get_latest_version() -> Result<Version, String> {
-  let request = get("https://api.github.com/repos/electron/electron/tags");
+  let request = reqwest::get("https://api.github.com/repos/electron/electron/tags");
   match request {
     Err(_) => Err("Request failed".to_owned()),
     Ok(mut response) => {
@@ -90,8 +110,4 @@ pub fn get_latest_version() -> Result<Version, String> {
       }
     }
   }
-}
-
-pub fn get_text(url: &str) -> String {
-  get(url).unwrap().text().unwrap()
 }
