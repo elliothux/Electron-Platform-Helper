@@ -5,7 +5,7 @@ use utils;
 use helper;
 use downloader;
 use rpc;
-use web_view::{WebView, Content, run};
+use web_view::{WebView, Content, WebViewBuilder};
 use model::{Version};
 use std::path::{PathBuf, Path};
 use std::fs;
@@ -18,31 +18,38 @@ use std::sync::mpsc::channel;
 
 
 pub fn open_install_helper() {
-    let html = utils::generate_html(
-        vec![],
-        vec![
-            include_str!("../view/js/rpc.js"),
-            include_str!("../view/js/main.js"),
-        ],
-    );
+    let view = ::std::thread::spawn(move || {
+        println!("111");
 
-    let title = "Electron Platform";
-    let size = (800, 480);
-    let resizable = true;
-    let debug = true;
+        let title = "Electron Platform";
+        let html = utils::generate_html(
+            vec![],
+            vec![
+                include_str!("../view/js/rpc.js"),
+                include_str!("../view/js/main.js"),
+            ],
+        );
 
-    let state: Vec<rpc::StateItem> = vec![];
+        let size = (800, 480);
+        let resizable = true;
+        let debug = true;
+        let state: Vec<rpc::StateItem> = vec![];
 
-    run(
-        title,
-        Content::Html(html),
-        Some(size),
-        resizable,
-        debug,
-        |_| {},
-        rpc::exec_callback,
-        state
-    );
+        WebViewBuilder::new()
+            .title(title)
+            .content(Content::Html(html))
+            .size(size.0, size.1)
+            .resizable(true)
+            .debug(true)
+            .user_data(state)
+            .invoke_handler(|_, _| { Ok(()) })
+            .build()
+            .expect("Build Error")
+            .run()
+            .expect("Run Error");
+    });
+
+    view.join().expect("Join Error");
 }
 
 pub fn install<T>(webview: &mut WebView<T>) {

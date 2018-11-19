@@ -1,5 +1,5 @@
 
-use web_view::{WebView, MyUnique};
+use web_view::{WebView};
 use installer;
 
 #[allow(non_camel_case_types)]
@@ -25,7 +25,7 @@ pub enum Cmd {
 #[derive(Deserialize)]
 pub struct StateItem {}
 
-pub fn exec_callback<'a, T>(webview: &mut WebView<'a, T>, arg: &str, state: &mut Vec<StateItem>) {
+pub fn exec_callback<'a, T>(webview: &mut WebView<'a, T>, arg: &str) {
     match serde_json::from_str(arg).unwrap() {
         Cmd::log { text } => println!("{}", text),
         Cmd::install => installer::install(webview)
